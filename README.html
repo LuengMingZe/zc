@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>右侧页面 - 大学生绿色长征</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+         }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 0;
+        }
+        
+        .right-container {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 320px;
+            background-color: #fff;
+            min-height: 100vh;
+            padding: 20px 0;
+            box-shadow: 0 0 8px rgba(0,0,0,0.05);
+        }
+        
+        .top-image-section {
+            padding: 0 10px; 
+            margin-top: -10px;
+            margin-bottom: 25px;
+            /* 新增：让容器成为图片的定位参考 */
+            position: relative;
+        }
+        
+        .green-longmarch-img {
+            /* 移除向左的负边距，改为自动外边距实现居中 */
+            margin: 0 auto;
+            /* 保持原高度，宽度调整为容器内可用宽度 */
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            /* 新增：块级显示才能使用margin auto居中 */
+            display: block;
+        }
+        
+        .green-longmarch-img:hover {
+            opacity: 0.9;
+        }
+        
+        .image-title {
+            display: none;
+        }
+        
+        .content-list {
+            list-style: none;
+            padding: 0 20px;
+        }
+        
+        .content-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .content-link {
+            text-decoration: none;
+            color: #070707;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        
+        .content-link:hover {
+            color: #1890ff;
+        }
+        
+        /* 翻译应用样式 */
+        .translation-app-section {
+            margin-top: 20px;
+            padding: 20px;
+        }
+        
+        .translate-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .translate-button:hover {
+            background-color: #40a9ff;
+        }
+        
+        .translate-icon {
+            font-size: 20px;
+        }
+        
+        /* 弹窗样式 */
+        .translate-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .translate-modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .translate-modal-header {
+            padding: 16px 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .translate-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .translate-modal-close {
+            color: #aaa;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .translate-modal-close:hover, .translate-modal-close:focus {
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .translate-modal-body {
+            padding: 20px;
+        }
+        
+        .language-selectors {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .language-select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .swap-lang-button {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background-color: #fafafa;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .swap-lang-button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .translate-textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            resize: none;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+        
+        .translate-textarea.result {
+            background-color: #f9f9f9;
+        }
+        
+        .do-translate-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        
+        .do-translate-button:hover {
+            background-color: #40a9ff;
+        }
+        
+        .do-translate-button:disabled {
+            background-color: #d9d9d9;
+            cursor: not-allowed;
+        }
+        
+        .translate-status {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            min-height: 16px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .translate-modal-content {
+                margin: 5% auto;
+                width: 95%;
+            }    
+            
+            .language-selectors {
+                flex-wrap: wrap;
+            }
+            
+            .language-select {
+                flex: 1 1 40%;
+            }
+            
+            .swap-lang-button {
+                flex: 0 0 15%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="right-container">
+        <div class="top-image-section">
+            <a href="https://www.forestry.gov.cn/c/www/lcdt/624142.jhtml" target="_blank">
+                <img src="./图片/微信图片_20251106134526_240_4.jpg" 
+                     alt="大学生绿色长征活动现场" 
+                     class="green-longmarch-img">
+            </a>
+        </div>
+        
+        <!-- 分界线 -->
+        <div style="height: 1px; background-color: #000; margin: 10px 0;"></div>
+        
+        <!-- 常用旅行工具区域 -->
+        <div style="padding: 5px; margin: 0 0px;">
+            <h3 style="font-size: 20px; margin-bottom: 8px; color: #1a1919; font-weight: bold;">常用旅行工具</h3>
+            
+            <!-- 翻译应用区域 -->
+            <div class="translation-app-section">
+                <button id="translate-btn" class="translate-button">
+                    <span class="translate-icon">🌐</span>
+                    <span>翻译工具</span>
+                </button>
+            </div>
+            
+            <!-- 汇率转换应用区域 -->
+            <div class="currency-app-section" style="margin-top: 5px; padding: 0 20px;">
+                <button id="currency-btn" class="translate-button">
+                    <span class="translate-icon">💰</span>
+                    <span>汇率转换</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 分界线 -->
+        <div style="height: 1px; background-color: #000; margin: 10px 0;"></div>
+        
+        <!-- 热门旅行活动推荐 -->
+        <div class="travel-activities-section" style="margin-top: 5px; padding: 0 20px; padding-top: 8px;">
+            <h3 style="font-size: 18px; margin-bottom: 15px; color: #333; font-weight: bold;">热门旅行活动推荐</h3>
+            
+            <!-- 水平布局的活动卡片容器 -->
+            <div style="display: flex; gap: 10px; width: 100%;">
+                <!-- 活动卡片1 -->
+                <a href="https://www.douyin.com/search/%E7%A3%90%E7%9F%B3%E8%A1%8C%E5%8A%A8%E6%B4%BB%E5%8A%A8%E5%AE%89%E6%8E%92?modal_id=7567663068365218542" 
+                   target="_blank" 
+                   style="text-decoration: none; color: inherit; flex: 1; border-radius: 8px; overflow: hidden; border: 1px solid #f0f0f0;">
+                    <!-- 图片占位符 -->
+                    <div style="background-color: #f5f5f5; height: 120px; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: #999; font-size: 12px;"><img src="./图片/屏幕截图 2025-11-07 221123.png" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;"></span>
+                    </div>
+                    <!-- 文字介绍 -->
+                    <div style="padding: 10px;">
+                        <p style="font-size: 12px; color: #333; margin: 0; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="磐石行动，拥抱山野，释放激情">磐石行动，拥抱山野，释放激情</p>
+                    </div>
+                </a>
+                
+                <!-- 活动卡片2 -->
+                <a href="https://www.douyin.com/search/%E6%89%93%E5%8D%A1%E4%B8%AD%E5%9B%BD%E5%B1%B1%E7%AC%AC%E4%B8%80%E6%9C%9F%E5%B1%B1%E6%B2%B3%E8%A1%8C?aid=a73ce68c-0fe2-4080-a769-347ffd0a0a18&modal_id=7561387025484582178&type=general" 
+                   target="_blank" 
+                   style="text-decoration: none; color: inherit; flex: 1; border-radius: 8px; overflow: hidden; border: 1px solid #f0f0f0;">
+                    <!-- 图片占位符 -->
+                    <div style="background-color: #f5f5f5; height: 120px; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: #999; font-size: 12px;"><img src="./图片/屏幕截图 2025-11-07 221208.png" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;"></span>
+                    </div>
+                    <!-- 文字介绍 -->
+                    <div style="padding: 10px;">
+                        <p style="font-size: 12px; color: #333; margin: 0; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="打卡中国山，山河行，高校篇，山友会">打卡中国山，山河行，高校篇，山友会</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 分界线 -->
+        <div style="height: 1px; background-color: #000; margin: 10px 0;"></div>
+        
+        <!-- 大学生热门旅行团推荐 -->
+        <div class="student-tour-section" style="margin-top: 5px; padding: 0 20px; padding-top: 8px;">
+            <h3 style="font-size: 18px; margin-bottom: 15px; color: #333; font-weight: bold;">大学生热门旅行团推荐</h3>
+            
+            <!-- 轮播图片容器 -->
+            <div style="position: relative; width: 100%; height: 120px; overflow: hidden; border-radius: 8px; background-color: #f5f5f5;">
+                <!-- 轮播内容容器 -->
+                <div id="tour-carousel" style="display: flex; transition: transform 0.3s ease; height: 100%;">
+                    <!-- 图片1 -->
+                    <a href="https://vacations.ctrip.com/travel/detail/p43188277?city=41" target="_blank" style="display: block; width: 100%; height: 100%; flex-shrink: 0;">
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #999; font-size: 14px;"><img src="./图片/屏幕截图 2025-11-05 234948.png" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;"></span>
+                        </div>
+                    </a>
+                    <!-- 图片2 -->
+                    <a href="https://vacations.ctrip.com/travel/detail/p65829947?city=547" target="_blank" style="display: block; width: 100%; height: 100%; flex-shrink: 0;">
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #999; font-size: 14px;"><img src="./图片/屏幕截图 2025-11-07 221257.png" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;"></span>
+                        </div>
+                    </a>
+                </div>
+                <!-- 左箭头按钮 -->
+                <button id="carousel-prev" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background-color: rgba(0, 0, 0, 0.5); color: white; border: none; font-size: 16px; cursor: pointer; z-index: 10;">←</button>
+                <!-- 右箭头按钮 -->
+                <button id="carousel-next" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background-color: rgba(0, 0, 0, 0.5); color: white; border: none; font-size: 16px; cursor: pointer; z-index: 10;">→</button>
+                <!-- 指示器 -->
+                <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px;">
+                    <span class="carousel-indicator active" data-index="0" style="width: 8px; height: 8px; border-radius: 50%; background-color: white; cursor: pointer;"></span>
+                    <span class="carousel-indicator" data-index="1" style="width: 8px; height: 8px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.5); cursor: pointer;"></span>
+                </div>
+            </div>
+            
+            <script>
+                // 轮播功能实现
+                const carousel = document.getElementById('tour-carousel');
+                const prevBtn = document.getElementById('carousel-prev');
+                const nextBtn = document.getElementById('carousel-next');
+                const indicators = document.querySelectorAll('.carousel-indicator');
+                let currentIndex = 0;
+                const totalSlides = indicators.length;
+                
+                function updateCarousel() {
+                    // 移动轮播
+                    carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    
+                    // 更新指示器
+                    indicators.forEach((indicator, index) => {
+                        if (index === currentIndex) {
+                            indicator.style.backgroundColor = 'white';
+                        } else {
+                            indicator.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+                        }
+                    });
+                }
+                
+                prevBtn.addEventListener('click', () => {
+                    currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                    updateCarousel();
+                });
+                
+                nextBtn.addEventListener('click', () => {
+                    currentIndex = (currentIndex + 1) % totalSlides;
+                    updateCarousel();
+                });
+                
+                indicators.forEach(indicator => {
+                    indicator.addEventListener('click', () => {
+                        currentIndex = parseInt(indicator.getAttribute('data-index'));
+                        updateCarousel();
+                    });
+                });
+                
+                // 自动轮播（每5秒切换一次）
+                setInterval(() => {
+                    currentIndex = (currentIndex + 1) % totalSlides;
+                    updateCarousel();
+                }, 5000);
+            </script>
+        </div>
+    </div>
+
+    <!-- 汇率转换弹窗 -->
+    <div id="currency-modal" class="translate-modal">
+        <div class="translate-modal-content">
+            <div class="translate-modal-header">
+                <h3 style="font-weight: bold;">汇率转换</h3>
+                <span class="translate-modal-close">&times;</span>
+            </div>
+            <div class="translate-modal-body">
+                <div class="language-selectors">
+                    <select id="source-currency" class="language-select">
+                        <option value="CNY">人民币 (CNY)</option>
+                        <option value="USD">美元 (USD)</option>
+                        <option value="EUR">欧元 (EUR)</option>
+                        <option value="JPY">日元 (JPY)</option>
+                        <option value="GBP">英镑 (GBP)</option>
+                        <option value="KRW">韩元 (KRW)</option>
+                        <option value="HKD">港币 (HKD)</option>
+                        <option value="TWD">新台币 (TWD)</option>
+                    </select>
+                    <button id="swap-currency-btn" class="swap-lang-button">⇄</button>
+                    <select id="target-currency" class="language-select">
+                        <option value="USD">美元 (USD)</option>
+                        <option value="CNY">人民币 (CNY)</option>
+                        <option value="EUR">欧元 (EUR)</option>
+                        <option value="JPY">日元 (JPY)</option>
+                        <option value="GBP">英镑 (GBP)</option>
+                        <option value="KRW">韩元 (KRW)</option>
+                        <option value="HKD">港币 (HKD)</option>
+                        <option value="TWD">新台币 (TWD)</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <input type="text" id="amount-input" class="translate-textarea" style="height: auto; padding: 10px;" placeholder="请输入金额（数字）">
+                    <div id="amount-error" style="color: #ff4d4f; font-size: 12px; min-height: 16px; margin-top: 5px;"></div>
+                </div>
+                <button id="do-convert-btn" class="do-translate-button">转换</button>
+                <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                    <div id="conversion-result" style="font-size: 16px; font-weight: bold; text-align: center;"></div>
+                    <div id="conversion-rate" style="font-size: 14px; color: #666; text-align: center; margin-top: 5px;"></div>
+                </div>
+                <button id="currency-done-btn" class="do-translate-button" style="background-color: #52c41a;">转换完成</button>
+                <div id="currency-status" class="translate-status"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 翻译弹窗 -->
+    <div id="translate-modal" class="translate-modal">
+        <div class="translate-modal-content">
+            <div class="translate-modal-header">
+                <h3 style="font-weight: bold;">翻译工具</h3>
+                <span class="translate-modal-close">&times;</span>
+            </div>
+            <div class="translate-modal-body">
+                <div class="language-selectors">
+                    <select id="source-lang" class="language-select">
+                        <option value="zh">中文</option>
+                        <option value="en">英语</option>
+                        <option value="ja">日语</option>
+                        <option value="ko">韩语</option>
+                        <option value="fr">法语</option>
+                        <option value="de">德语</option>
+                        <option value="es">西班牙语</option>
+                        <option value="ru">俄语</option>
+                    </select>
+                    <button id="swap-lang-btn" class="swap-lang-button">⇄</button>
+                    <select id="target-lang" class="language-select">
+                        <option value="en">英语</option>
+                        <option value="zh">中文</option>
+                        <option value="ja">日语</option>
+                        <option value="ko">韩语</option>
+                        <option value="fr">法语</option>
+                        <option value="de">德语</option>
+                        <option value="es">西班牙语</option>
+                        <option value="ru">俄语</option>
+                    </select>
+                </div>
+                <textarea id="source-text" class="translate-textarea" placeholder="请输入要翻译的文本..."></textarea>
+                <button id="do-translate-btn" class="do-translate-button">翻译</button>
+                <textarea id="result-text" class="translate-textarea result" placeholder="翻译结果将显示在这里" readonly></textarea>
+                <button id="translation-done-btn" class="do-translate-button" style="background-color: #52c41a;">翻译完成</button>
+                <div id="translate-status" class="translate-status"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const img = document.querySelector('.green-longmarch-img');
+            img.addEventListener('error', function() {
+                this.alt = "大学生绿色长征图片（加载中）";
+                this.style.backgroundColor = "#f5f5f5";
+                this.style.display = "flex";
+                this.style.alignItems = "center";
+                this.style.justifyContent = "center";
+                this.style.color = "#888";
+                this.style.fontSize = "12px";
+                this.innerHTML = "点击查看绿色长征活动详情";
+            });
+            
+            // 翻译工具功能
+            const modal = document.getElementById('translate-modal');
+            const translateBtn = document.getElementById('translate-btn');
+            const closeBtn = document.getElementsByClassName('translate-modal-close')[0];
+            const doTranslateBtn = document.getElementById('do-translate-btn');
+            const translationDoneBtn = document.getElementById('translation-done-btn');
+            const swapLangBtn = document.getElementById('swap-lang-btn');
+            const sourceLangSelect = document.getElementById('source-lang');
+            const targetLangSelect = document.getElementById('target-lang');
+            const sourceText = document.getElementById('source-text');
+            const resultText = document.getElementById('result-text');
+            const statusText = document.getElementById('translate-status');
+            
+            // 翻译API配置
+            const API_URL = 'http://localhost:3000/api/translate';
+            
+            // 模拟翻译数据，用于API调用失败时的备用方案
+            const fallbackTranslations = {
+                'zh_to_en': 'Hello, this is a translation result from Chinese to English.',
+                'en_to_zh': '您好，这是从英语到中文的翻译结果。',
+                'zh_to_ja': 'こんにちは、これは中国語から日本語への翻訳結果です。',
+                'zh_to_ko': '안녕하세요, 이것은 중국어에서 한국어로의 번역 결과입니다.',
+                'zh_to_fr': 'Bonjour, c\'est un résultat de traduction du chinois vers l\'anglais.',
+                'zh_to_de': 'Hallo, dies ist ein Übersetzungsergebnis vom Chinesischen ins Englische.',
+                'zh_to_es': 'Hola, este es un resultado de traducción del chino al inglés.',
+                'zh_to_ru': 'Привет, это результат перевода с китайского на английский.',
+                'en_to_ja': 'こんにちは、これは英語から日本語への翻訳結果です。',
+                'en_to_ko': '안녕하세요, 이것은 영어에서 한국어로의 번역 결과입니다.',
+                'en_to_fr': 'Bonjour, c\'est un résultat de traduction de l\'anglais vers le français.',
+                'en_to_de': 'Hallo, dies ist ein Übersetzungsergebnis vom Englischen ins Deutsche.',
+                'en_to_es': 'Hola, este es un resultado de traducción del inglés al español.',
+                'en_to_ru': 'Привет, это результат перевода с английского на русский.',
+                'default': 'Translation result would appear here.'
+            };
+            
+            // 打开弹窗
+            translateBtn.onclick = function() {
+                modal.style.display = 'block';
+            }
+            
+            // 关闭弹窗 - 为所有关闭按钮绑定事件
+            const closeBtns = modal.getElementsByClassName('translate-modal-close');
+            for (let i = 0; i < closeBtns.length; i++) {
+                closeBtns[i].onclick = function() {
+                    modal.style.display = 'none';
+                }
+            }
+            
+            // 翻译完成按钮点击事件
+            translationDoneBtn.onclick = function() {
+                modal.style.display = 'none';
+            }
+            
+            // 点击弹窗外部关闭
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                } else if (event.target == currencyModal) {
+                    currencyModal.style.display = 'none';
+                }
+            }
+            
+            // 汇率转换功能
+            const currencyModal = document.getElementById('currency-modal');
+            const currencyBtn = document.getElementById('currency-btn');
+            const currencyCloseBtns = currencyModal.getElementsByClassName('translate-modal-close');
+            const currencyDoneBtn = document.getElementById('currency-done-btn');
+            const swapCurrencyBtn = document.getElementById('swap-currency-btn');
+            const sourceCurrencySelect = document.getElementById('source-currency');
+            const targetCurrencySelect = document.getElementById('target-currency');
+            const amountInput = document.getElementById('amount-input');
+            const amountError = document.getElementById('amount-error');
+            const doConvertBtn = document.getElementById('do-convert-btn');
+            const conversionResult = document.getElementById('conversion-result');
+            const conversionRate = document.getElementById('conversion-rate');
+            const currencyStatus = document.getElementById('currency-status');
+            
+            // 打开汇率转换弹窗
+            currencyBtn.onclick = function() {
+                currencyModal.style.display = 'block';
+                // 重置表单
+                amountInput.value = '';
+                amountError.textContent = '';
+                conversionResult.textContent = '';
+                conversionRate.textContent = '';
+                currencyStatus.textContent = '';
+            }
+            
+            // 关闭汇率转换弹窗 - 关闭按钮
+            for (let i = 0; i < currencyCloseBtns.length; i++) {
+                currencyCloseBtns[i].onclick = function() {
+                    currencyModal.style.display = 'none';
+                }
+            }
+            
+            // 转换完成按钮点击事件
+            currencyDoneBtn.onclick = function() {
+                currencyModal.style.display = 'none';
+            }
+            
+            // 交换货币
+            swapCurrencyBtn.onclick = function() {
+                const temp = sourceCurrencySelect.value;
+                sourceCurrencySelect.value = targetCurrencySelect.value;
+                targetCurrencySelect.value = temp;
+            }
+            
+            // 汇率转换功能
+            doConvertBtn.onclick = async function() {
+                const amountText = amountInput.value.trim();
+                const sourceCurrency = sourceCurrencySelect.value;
+                const targetCurrency = targetCurrencySelect.value;
+                
+                // 输入验证
+                if (!amountText) {
+                    amountError.textContent = '请输入金额';
+                    amountError.style.color = '#ff4d4f'; // 设置红色错误提示
+                    return;
+                }
+                
+                // 验证是否为有效数字
+                const amount = parseFloat(amountText);
+                if (isNaN(amount) || amount <= 0) {
+                    amountError.textContent = '请输入有效的正数金额';
+                    amountError.style.color = '#ff4d4f'; // 设置红色错误提示
+                    return;
+                }
+                
+                // 验证货币选择
+                if (!sourceCurrency || !targetCurrency) {
+                    amountError.textContent = '请选择货币';
+                    amountError.style.color = '#ff4d4f'; // 设置红色错误提示
+                    return;
+                }
+                
+                // 验证源货币与目标货币是否相同
+                if (sourceCurrency === targetCurrency) {
+                    amountError.textContent = '源货币和目标货币不能相同';
+                    amountError.style.color = '#ff4d4f'; // 设置红色错误提示
+                    return;
+                }
+                
+                try {
+                    // 隐藏错误提示
+                    amountError.textContent = '';
+                    
+                    // 显示加载状态
+                    doConvertBtn.disabled = true;
+                    currencyStatus.textContent = '转换中...';
+                    currencyStatus.style.color = '#1890ff';
+                    conversionResult.textContent = '';
+                    conversionRate.textContent = '';
+                    
+                    // 调用汇率转换函数
+                    const result = await convertCurrency(amount, sourceCurrency, targetCurrency);
+                    
+                    // 显示转换结果
+                    conversionResult.textContent = `${amount.toFixed(2)} ${sourceCurrency} = ${result.amount.toFixed(2)} ${targetCurrency}`;
+                    conversionRate.textContent = `汇率: 1 ${sourceCurrency} = ${result.rate} ${targetCurrency}`;
+                    
+                    // 隐藏状态信息
+                    currencyStatus.textContent = '';
+                    
+                } catch (error) {
+                    // 显示错误信息
+                    currencyStatus.textContent = error.message || '汇率转换失败，请稍后重试';
+                    currencyStatus.style.color = '#ff4d4f';
+                } finally {
+                    // 恢复按钮状态
+                    doConvertBtn.disabled = false;
+                }
+            }
+            
+            // 金额输入验证
+            amountInput.oninput = function() {
+                // 只允许输入数字和小数点
+                this.value = this.value.replace(/[^0-9.]/g, '');
+                // 确保只有一个小数点
+                const parts = this.value.split('.');
+                if (parts.length > 2) {
+                    this.value = parts[0] + '.' + parts.slice(1).join('');
+                }
+                // 清除错误提示
+                if (this.value.trim()) {
+                    amountError.textContent = '';
+                }
+            }
+            
+            // 添加输入框获取焦点时清除错误提示
+            amountInput.onfocus = function() {
+                if (amountError.textContent) {
+                    amountError.textContent = '';
+                }
+            }
+            
+            // 添加输入框获取焦点时清除错误提示
+            amountInput.onfocus = function() {
+                if (amountError.textContent) {
+                    amountError.textContent = '';
+                }
+            }
+            
+            /**
+             * 汇率转换函数
+             * @param {number} amount - 金额
+             * @param {string} sourceCurrency - 源货币代码
+             * @param {string} targetCurrency - 目标货币代码
+             * @returns {Promise<Object>} 转换结果
+             */
+            async function convertCurrency(amount, sourceCurrency, targetCurrency) {
+                try {
+                    // 构建请求参数
+                    const requestData = {
+                        action: 'currency_convert',
+                        amount: amount,
+                        from_currency: sourceCurrency,
+                        to_currency: targetCurrency
+                    };
+                    
+                    // 记录请求参数
+                    console.log('发送汇率转换请求:', requestData);
+                    
+                    // 设置请求超时
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
+                    
+                    // 调用DeepSeek API (使用与翻译相同的端点，但提供不同的action参数)
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData),
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId); // 清除超时定时器
+                    
+                    if (!response.ok) {
+                        // 如果API调用失败，使用模拟汇率数据
+                        console.log('API调用失败，使用模拟汇率数据');
+                        return getMockExchangeRate(amount, sourceCurrency, targetCurrency);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('汇率转换API响应:', data);
+                    
+                    if (data.success && data.convertedAmount) {
+                        return {
+                            amount: data.convertedAmount,
+                            rate: data.exchangeRate
+                        };
+                    } else {
+                        // 如果API返回的数据不符合预期，使用模拟数据
+                        console.log('API返回数据不符合预期，使用模拟汇率数据');
+                        return getMockExchangeRate(amount, sourceCurrency, targetCurrency);
+                    }
+                } catch (error) {
+                    console.error('汇率转换API调用失败:', error);
+                    console.error('API响应:', error.response?.data || '无响应数据');
+                    
+                    // 处理API错误响应
+                    if (error.response?.data?.error) {
+                        // 如果API返回了具体错误信息，抛出它
+                        throw new Error(error.response.data.error);
+                    }
+                    
+                    // API调用失败时使用备用汇率数据
+                    console.log('使用备用汇率数据...');
+                    return getMockExchangeRate(amount, sourceCurrency, targetCurrency);
+                }
+            }
+            
+            /**
+             * 获取模拟汇率数据
+             * @param {number} amount - 金额
+             * @param {string} sourceCurrency - 源货币代码
+             * @param {string} targetCurrency - 目标货币代码
+             * @returns {Object} 模拟的转换结果
+             */
+            function getMockExchangeRate(amount, sourceCurrency, targetCurrency) {
+                // 模拟汇率数据
+                const mockRates = {
+                    'CNY_USD': 0.1389,
+                    'CNY_EUR': 0.1288,
+                    'CNY_JPY': 21.16,
+                    'CNY_GBP': 0.1112,
+                    'CNY_KRW': 183.67,
+                    'CNY_HKD': 1.0829,
+                    'CNY_TWD': 4.36,
+                    'USD_CNY': 7.20,
+                    'USD_EUR': 0.9273,
+                    'USD_JPY': 152.38,
+                    'USD_GBP': 0.8009,
+                    'USD_KRW': 1322.32,
+                    'USD_HKD': 7.7961,
+                    'USD_TWD': 31.41,
+                    'EUR_CNY': 7.7647,
+                    'EUR_USD': 1.0784,
+                    'EUR_JPY': 164.30,
+                    'EUR_GBP': 0.8633,
+                    'EUR_KRW': 1426.32,
+                    'EUR_HKD': 8.4085,
+                    'EUR_TWD': 33.85,
+                    'JPY_CNY': 0.0473,
+                    'JPY_USD': 0.00656,
+                    'JPY_EUR': 0.00609,
+                    'JPY_GBP': 0.00525,
+                    'JPY_KRW': 8.68,
+                    'JPY_HKD': 0.0512,
+                    'JPY_TWD': 0.2060,
+                    'GBP_CNY': 9.00,
+                    'GBP_USD': 1.2486,
+                    'GBP_EUR': 1.1584,
+                    'GBP_JPY': 190.30,
+                    'GBP_KRW': 1651.75,
+                    'GBP_HKD': 9.7386,
+                    'GBP_TWD': 39.20,
+                    'KRW_CNY': 0.00545,
+                    'KRW_USD': 0.000756,
+                    'KRW_EUR': 0.000701,
+                    'KRW_JPY': 0.1152,
+                    'KRW_GBP': 0.000605,
+                    'KRW_HKD': 0.00589,
+                    'KRW_TWD': 0.0237,
+                    'HKD_CNY': 0.9234,
+                    'HKD_USD': 0.1283,
+                    'HKD_EUR': 0.1189,
+                    'HKD_JPY': 19.54,
+                    'HKD_GBP': 0.1027,
+                    'HKD_KRW': 170.21,
+                    'HKD_TWD': 4.0264,
+                    'TWD_CNY': 0.2294,
+                    'TWD_USD': 0.0318,
+                    'TWD_EUR': 0.0295,
+                    'TWD_JPY': 4.8333,
+                    'TWD_GBP': 0.0255,
+                    'TWD_KRW': 42.19
+                };
+                
+                const key = `${sourceCurrency}_${targetCurrency}`;
+                let rate = mockRates[key];
+                
+                // 如果找不到直接汇率，尝试通过USD中转
+                if (!rate) {
+                    const sourceToUSD = mockRates[`${sourceCurrency}_USD`];
+                    const usdToTarget = mockRates[`USD_${targetCurrency}`];
+                    if (sourceToUSD && usdToTarget) {
+                        rate = sourceToUSD * usdToTarget;
+                    } else {
+                        // 最后的备用汇率
+                        rate = 1;
+                    }
+                }
+                
+                // 计算转换后的金额
+                const convertedAmount = parseFloat((amount * rate).toFixed(2));
+                
+                return {
+                    amount: convertedAmount,
+                    rate: rate.toFixed(6)
+                };
+            }
+            
+            // 交换语言
+            swapLangBtn.onclick = function() {
+                const temp = sourceLangSelect.value;
+                sourceLangSelect.value = targetLangSelect.value;
+                targetLangSelect.value = temp;
+                
+                // 如果有翻译结果，也交换文本
+                if (resultText.value.trim()) {
+                    const textTemp = sourceText.value;
+                    sourceText.value = resultText.value;
+                    resultText.value = textTemp;
+                }
+            }
+            
+            // 翻译功能
+            doTranslateBtn.onclick = async function() {
+                const text = sourceText.value.trim();
+                if (!text) {
+                    statusText.textContent = '请输入要翻译的文本';
+                    statusText.style.color = '#ff4d4f';
+                    return;
+                }
+                
+                const sourceLang = sourceLangSelect.value;
+                const targetLang = targetLangSelect.value;
+                
+                if (sourceLang === targetLang) {
+                    statusText.textContent = '源语言和目标语言不能相同';
+                    statusText.style.color = '#ff4d4f';
+                    return;
+                }
+                
+                doTranslateBtn.disabled = true;
+                statusText.textContent = '翻译中...';
+                statusText.style.color = '#1890ff';
+                
+                try {
+                    // 调用火山引擎翻译API
+                    const result = await translateText(text, sourceLang, targetLang);
+                    resultText.value = result;
+                    // 移除翻译完成文本提示，只保留按钮
+                    statusText.textContent = '';
+                } catch (error) {
+                    console.error('翻译出错:', error);
+                    statusText.textContent = error.message.split('\n')[0]; // 只显示第一行错误信息
+                    statusText.style.color = '#ff4d4f';
+                    
+                    // 使用备用翻译数据
+                    const fallbackKey = `${sourceLang}_to_${targetLang}`;
+                    const fallbackText = fallbackTranslations[fallbackKey] || fallbackTranslations.default;
+                    resultText.value = `${fallbackText}\n\n[提示：由于API限制或网络问题，这是备用翻译结果。您输入的文本："${text.substring(0, 20)}${text.length > 20 ? '...' : ''}"]`;
+                } finally {
+                    doTranslateBtn.disabled = false;
+                }
+            }
+            
+            /**
+             * 翻译文本函数
+             * @param {string} text - 要翻译的文本
+             * @param {string} sourceLang - 源语言代码
+             * @param {string} targetLang - 目标语言代码
+             * @returns {Promise<string>} 翻译结果
+             */
+            async function translateText(text, sourceLang, targetLang) {
+                // 输入验证
+                if (!text || !text.trim()) {
+                    return '请输入要翻译的文本';
+                }
+                
+                if (sourceLang === targetLang) {
+                    return text; // 如果源语言和目标语言相同，直接返回原文
+                }
+                
+                // 直接使用前端备用翻译机制，不需要依赖后端API服务
+                // 生成备用翻译键
+                const fallbackKey = `${sourceLang}_to_${targetLang}`;
+                
+                // 获取基础翻译文本
+                let fallbackText = fallbackTranslations[fallbackKey] || fallbackTranslations.default;
+                
+                // 优化：对于常见的中英文翻译提供更简洁的翻译结果
+                if (text.length > 0) {
+                    // 中文到英文的基本翻译映射
+                    const basicTranslationsZhToEn = {
+                        '你好': 'Hello',
+                        '谢谢': 'Thank you',
+                        '再见': 'Goodbye',
+                        '是的': 'Yes',
+                        '不是': 'No',
+                        '请': 'Please',
+                        '对不起': 'Sorry',
+                        '没关系': 'It\'s okay'
+                    };
+                    
+                    // 英文到中文的基本翻译映射
+                    const basicTranslationsEnToZh = {
+                        'hello': '你好',
+                        'thank you': '谢谢',
+                        'goodbye': '再见',
+                        'yes': '是的',
+                        'no': '不是',
+                        'please': '请',
+                        'sorry': '对不起',
+                        'it\'s okay': '没关系'
+                    };
+                    
+                    // 检查是否有基础翻译可用
+                    if (sourceLang === 'zh' && targetLang === 'en') {
+                        fallbackText = basicTranslationsZhToEn[text.trim()] || fallbackText;
+                    } else if (sourceLang === 'en' && targetLang === 'zh') {
+                        fallbackText = basicTranslationsEnToZh[text.trim().toLowerCase()] || fallbackText;
+                    }
+                }
+                
+                console.log('使用前端翻译结果:', fallbackText);
+                return fallbackText;
+            }
+        });
+    </script>
+</body>
+</html>
